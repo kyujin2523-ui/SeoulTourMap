@@ -25,5 +25,6 @@ frontend/build
 *.sw?
 
 # Environment variables
+.env
 firebase-functions/.env
 frontend/.env
