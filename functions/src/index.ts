@@ -1,11 +1,8 @@
 import * as functions from "firebase-functions/v2/https";
-import { defineSecret } from "firebase-functions/params";
 import Anthropic from "@anthropic-ai/sdk";
 import * as admin from "firebase-admin";
 
 admin.initializeApp();
-
-const anthropicApiKey = defineSecret("ANTHROPIC_API_KEY");
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -65,7 +62,6 @@ function parseClaudeResponse(text: string): TourRecommendationResponse {
 
 export const getTourRecommendations = functions.onRequest(
   {
-    secrets: [anthropicApiKey],
     cors: true,
     region: "us-central1",
   },
@@ -83,8 +79,14 @@ export const getTourRecommendations = functions.onRequest(
       return;
     }
 
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      res.status(500).json({ error: "ANTHROPIC_API_KEY is not set" });
+      return;
+    }
+
     try {
-      const client = new Anthropic({ apiKey: anthropicApiKey.value() });
+      const client = new Anthropic({ apiKey });
 
       const message = await client.messages.create({
         model: "claude-sonnet-4-6",

@@ -38,11 +38,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTourRecommendations = void 0;
 const functions = __importStar(require("firebase-functions/v2/https"));
-const params_1 = require("firebase-functions/params");
 const sdk_1 = __importDefault(require("@anthropic-ai/sdk"));
 const admin = __importStar(require("firebase-admin"));
 admin.initializeApp();
-const anthropicApiKey = (0, params_1.defineSecret)("ANTHROPIC_API_KEY");
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function buildPrompt(req) {
     const categoryHint = req.category ? ` Focus on ${req.category} spots.` : "";
@@ -75,7 +73,6 @@ function parseClaudeResponse(text) {
 }
 // ─── Cloud Function ───────────────────────────────────────────────────────────
 exports.getTourRecommendations = functions.onRequest({
-    secrets: [anthropicApiKey],
     cors: true,
     region: "us-central1",
 }, async (req, res) => {
@@ -89,8 +86,13 @@ exports.getTourRecommendations = functions.onRequest({
         res.status(400).json({ error: "Missing required field: query" });
         return;
     }
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+        res.status(500).json({ error: "ANTHROPIC_API_KEY is not set" });
+        return;
+    }
     try {
-        const client = new sdk_1.default({ apiKey: anthropicApiKey.value() });
+        const client = new sdk_1.default({ apiKey });
         const message = await client.messages.create({
             model: "claude-sonnet-4-6",
             max_tokens: 1024,

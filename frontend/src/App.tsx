@@ -4,6 +4,8 @@ import PlaceCard from "./components/PlaceCard";
 import { getTourRecommendations, TourPlace } from "./api";
 import "./App.css";
 
+const NAVER_CLIENT_ID = process.env.REACT_APP_NAVER_CLIENT_ID;
+
 export default function App() {
   const [places, setPlaces] = useState<TourPlace[]>([]);
   const [summary, setSummary] = useState("");
