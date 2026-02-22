@@ -28,3 +28,4 @@ frontend/build
 .env
 firebase-functions/.env
 frontend/.env
+functions/.env
