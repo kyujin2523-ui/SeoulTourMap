@@ -10,6 +10,8 @@ export interface TourPlace {
   category: string;
   tips: string;
   address?: string;
+  lat: number;
+  lng: number;
 }
 
 export interface TourRecommendationResponse {

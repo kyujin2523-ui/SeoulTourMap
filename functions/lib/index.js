@@ -57,13 +57,15 @@ Respond ONLY with a valid JSON object in this exact shape:
       "description": "2-3 sentence description",
       "category": "one of: history | food | nature | shopping | culture | entertainment",
       "tips": "1-2 practical visitor tips",
-      "address": "district or neighborhood"
+      "address": "district or neighborhood",
+      "lat": 37.5796,
+      "lng": 126.9770
     }
   ],
   "summary": "A 1-2 sentence overview of these recommendations"
 }
 
-Return 3-5 places. Do not include any text outside the JSON.`;
+Return 3-5 places. Use accurate GPS coordinates for each place in Seoul. Do not include any text outside the JSON.`;
 }
 function parseClaudeResponse(text) {
     const jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -76,7 +78,6 @@ exports.getTourRecommendations = functions.onRequest({
     cors: true,
     region: "us-central1",
 }, async (req, res) => {
-    // Only allow POST
     if (req.method !== "POST") {
         res.status(405).json({ error: "Method not allowed" });
         return;
@@ -96,12 +97,7 @@ exports.getTourRecommendations = functions.onRequest({
         const message = await client.messages.create({
             model: "claude-sonnet-4-6",
             max_tokens: 1024,
-            messages: [
-                {
-                    role: "user",
-                    content: buildPrompt(body),
-                },
-            ],
+            messages: [{ role: "user", content: buildPrompt(body) }],
         });
         const textBlock = message.content.find((b) => b.type === "text");
         if (!textBlock || textBlock.type !== "text") {

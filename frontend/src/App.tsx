@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import SearchBar from "./components/SearchBar";
 import PlaceCard from "./components/PlaceCard";
+import NaverMap from "./components/NaverMap";
 import { getTourRecommendations, TourPlace } from "./api";
 import "./App.css";
-
-const NAVER_CLIENT_ID = process.env.REACT_APP_NAVER_CLIENT_ID;
 
 export default function App() {
   const [places, setPlaces] = useState<TourPlace[]>([]);
@@ -44,8 +43,12 @@ export default function App() {
       <SearchBar onSearch={handleSearch} loading={loading} />
 
       <main style={styles.main}>
-        {loading && <p style={styles.status}>Finding the best spots for you...</p>}
+        {/* Map — always visible */}
+        <div style={styles.mapWrapper}>
+          <NaverMap places={places} />
+        </div>
 
+        {loading && <p style={styles.status}>Finding the best spots for you...</p>}
         {error && <p style={styles.error}>{error}</p>}
 
         {summary && !loading && (
@@ -99,26 +102,35 @@ const styles: Record<string, React.CSSProperties> = {
     opacity: 0.85,
   },
   main: {
-    maxWidth: "900px",
+    maxWidth: "960px",
     margin: "0 auto",
     padding: "24px 16px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "20px",
+  },
+  mapWrapper: {
+    borderRadius: "10px",
+    overflow: "hidden",
+    boxShadow: "0 2px 12px rgba(0,0,0,0.1)",
   },
   status: {
     textAlign: "center",
     color: "#666",
     fontSize: "15px",
+    margin: 0,
   },
   error: {
     textAlign: "center",
     color: "#c62828",
     fontSize: "15px",
+    margin: 0,
   },
   summaryBox: {
     background: "#fff3e0",
     borderLeft: "4px solid #e63946",
     borderRadius: "6px",
     padding: "12px 16px",
-    marginBottom: "20px",
   },
   summaryText: {
     margin: 0,
@@ -134,7 +146,7 @@ const styles: Record<string, React.CSSProperties> = {
   emptyState: {
     textAlign: "center",
     color: "#888",
-    marginTop: "60px",
+    marginTop: "20px",
     fontSize: "15px",
     lineHeight: 2,
   },
