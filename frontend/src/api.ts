@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const FUNCTIONS_BASE_URL =
+const API_URL =
   process.env.REACT_APP_FUNCTIONS_URL ||
-  "https://us-central1-seoultourmap-12345.cloudfunctions.net";
+  "/api/getTourRecommendations";
 
 export interface TourPlace {
   name: string;
@@ -29,7 +29,7 @@ export async function getTourRecommendations(
   params: TourRecommendationRequest
 ): Promise<TourRecommendationResponse> {
   const response = await axios.post<TourRecommendationResponse>(
-    `${FUNCTIONS_BASE_URL}/getTourRecommendations`,
+    API_URL,
     params
   );
   return response.data;
